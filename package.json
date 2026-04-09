@@ -1,3 +1,5 @@
+
+
 {
   "name": "@typebot.io/root",
   "version": "3.16.0",
@@ -81,4 +83,14 @@
     "sharp",
     "inngest-cli"
   ]
+},
+```json
+{
+  "scripts": {
+    "build": "turbo run build --filter=./apps/*",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "start": "node apps/builder/dist/index.js"
+  }
 }
