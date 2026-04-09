@@ -32,6 +32,17 @@ RUN DATABASE_URL=postgresql:// bunx nx db:generate prisma
 
 # ================== RELEASE ======================
 
+COPY package*.json ./
+COPY ./prisma ./prisma
+COPY ./tsup.config.ts ./
+
+RUN npm ci --silent
+RUN npx prisma generate    # ← Explícito aquí
+
+COPY ./src ./src
+RUN npm run build
+
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
 FROM base AS release
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/prisma/postgresql ./packages/prisma/postgresql
@@ -58,6 +69,7 @@ COPY ./prisma ./prisma
 COPY ./tsup.config.ts ./
 
 # Instalar dependencias (postinstall correrá prisma generate)
+COPY ./prisma ./prisma
 RUN npm ci --silent
 
 # Copiar código fuente
