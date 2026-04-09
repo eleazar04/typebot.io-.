@@ -1,5 +1,4 @@
 # ================= INSTALL BUN ===================
-ARG SCOPE
 ARG BUN_VERSION=1.3.9
 
 FROM oven/bun:${BUN_VERSION}-slim AS bun
@@ -24,26 +23,22 @@ WORKDIR /app
 # =============== INSTALL & BUILD =================
 
 FROM base AS builder
-ARG SCOPE
 COPY . .
 RUN SENTRYCLI_SKIP_DOWNLOAD=1 bun install --frozen-lockfile
-RUN SKIP_ENV_CHECK=true DATABASE_URL=postgresql:// NEXT_PUBLIC_VIEWER_URL=http://localhost bunx nx build ${SCOPE}
+RUN SKIP_ENV_CHECK=true DATABASE_URL=postgresql:// NEXT_PUBLIC_VIEWER_URL=http://localhost bunx nx build builder
 RUN DATABASE_URL=postgresql:// bunx nx db:generate prisma
 
 # ================== RELEASE ======================
 
 FROM base AS release
-ARG SCOPE
-ENV SCOPE=${SCOPE}
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/prisma/postgresql ./packages/prisma/postgresql
-COPY --from=builder --chown=node:node /app/apps/${SCOPE}/.next/standalone ./
-COPY --from=builder --chown=node:node /app/apps/${SCOPE}/.next/static ./apps/${SCOPE}/.next/static
-COPY --from=builder --chown=node:node /app/apps/${SCOPE}/public ./apps/${SCOPE}/public
+COPY --from=builder --chown=node:node /app/apps/builder/.next/standalone ./
+COPY --from=builder --chown=node:node /app/apps/builder/.next/static ./apps/builder/.next/static
+COPY --from=builder --chown=node:node /app/apps/builder/public ./apps/builder/public
 
 COPY scripts/builder-entrypoint.sh ./
-COPY scripts/${SCOPE}-entrypoint.sh ./
-RUN chmod +x ./${SCOPE}-entrypoint.sh
+RUN chmod +x ./builder-entrypoint.sh
 USER node
 ENTRYPOINT ["./builder-entrypoint.sh"]
 
