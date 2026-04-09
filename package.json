@@ -82,3 +82,10 @@
     "inngest-cli"
   ]
 }
+{
+  "scripts": {
+    "build": "turbo build --filter=builder --filter=viewer",
+    "dev": "turbo dev",
+    "start": "cd apps/builder && npm start"
+  }
+}
