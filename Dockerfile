@@ -24,7 +24,9 @@ WORKDIR /app
 
 FROM base AS builder
 COPY . .
-RUN SENTRYCLI_SKIP_DOWNLOAD=1 bun install --frozen-lockfile
+RUN SENTRYCLI_SKIP_DOWNLOAD=1 bun install --frozen-lockfile --ignore-scripts
+RUN cd packages/env && bun run compile
+RUN bunx nx db:generate prisma || true
 RUN SKIP_ENV_CHECK=true DATABASE_URL=postgresql:// NEXT_PUBLIC_VIEWER_URL=http://localhost bunx nx build builder
 RUN DATABASE_URL=postgresql:// bunx nx db:generate prisma
 
