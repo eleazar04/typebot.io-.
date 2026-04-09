@@ -40,7 +40,7 @@ COPY --from=builder --chown=node:node /app/apps/${SCOPE}/.next/standalone ./
 COPY --from=builder --chown=node:node /app/apps/${SCOPE}/.next/static ./apps/${SCOPE}/.next/static
 COPY --from=builder --chown=node:node /app/apps/${SCOPE}/public ./apps/${SCOPE}/public
 
-
+COPY scripts/builder-entrypoint.sh ./
 COPY scripts/${SCOPE}-entrypoint.sh ./
 RUN chmod +x ./${SCOPE}-entrypoint.sh
 USER node
