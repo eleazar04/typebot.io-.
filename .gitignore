@@ -84,3 +84,16 @@ vitest.config.*.timestamp*
 content-collections.d.ts.map
 content-collections.d.ts
 **/next-env.d.ts
+
+```
+node_modules/
+dist/
+build/
+.env.local
+.env.*.local
+.vercel/
+.next/
+.turbo/
+```
+
+---
