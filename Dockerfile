@@ -32,7 +32,7 @@ RUN DATABASE_URL=postgresql:// bunx nx db:generate prisma
 
 # ================== RELEASE ======================
 
-FROM base AS release
+FROM base AS release --build-arg SCOPE
 ARG SCOPE
 ENV SCOPE=${SCOPE}
 COPY --from=builder /app/node_modules ./node_modules
