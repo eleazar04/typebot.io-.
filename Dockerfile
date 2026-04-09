@@ -44,5 +44,29 @@ RUN chmod +x ./builder-entrypoint.sh
 USER node
 ENTRYPOINT ["./builder-entrypoint.sh"]
 
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# ⭐ Copiar schema de Prisma ANTES de instalar ⭐
+COPY ./prisma ./prisma
+
+# Copiar config de build si es necesario
+COPY ./tsup.config.ts ./
+
+# Instalar dependencias (postinstall correrá prisma generate)
+RUN npm ci --silent
+
+# Copiar código fuente
+COPY ./src ./src
+
+# Compilar
+RUN npm run build
+
+# Ejecutar migraciones y arrancar
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
 EXPOSE 3000
 ENV PORT=3000
